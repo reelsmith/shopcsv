@@ -1,0 +1,46 @@
+# Example spec for `shopcsv build examples/products.yaml -o examples/products.csv`
+defaults:
+  vendor: Reelsmith Lights
+  inventory_qty: 50
+  inventory_policy: deny
+  status: active
+
+products:
+  - title: Christmas LED String Lights
+    description: |
+      Warm up your tree, balcony or window with 200 bright LEDs on a flexible
+      green copper wire. Plug-in, with 8 lighting modes and a 6-hour timer.
+
+      Safe to use indoors and outdoors (IP44).
+    type: String Lights
+    product_category: Home & Garden > Decor > Seasonal & Holiday Decorations
+    tags: [christmas, led, string lights, outdoor]
+    price: 24.99
+    compare_at: 39.99
+    grams: 450
+    sku_prefix: XMAS-LED
+    options:
+      Color: [Warm White, Cool White, Multicolor]
+      Length: [10m, 20m]
+    overrides:
+      - match: {Length: 20m}
+        price: 34.99
+        compare_at: 54.99
+        grams: 780
+      - match: {Color: Multicolor, Length: 20m}
+        inventory_qty: 0
+        inventory_policy: continue
+    images:
+      - src: https://cdn.example.com/xmas-led/hero.jpg
+        alt: LED string lights wrapped around a Christmas tree
+      - https://cdn.example.com/xmas-led/balcony.jpg
+      - https://cdn.example.com/xmas-led/remote.jpg
+
+  - title: LED Star Tree Topper
+    body_html: <p>Gold star topper with 30 warm white LEDs. Battery powered.</p>
+    type: Tree Toppers
+    tags: christmas, tree topper
+    price: 14.5
+    grams: 200
+    images:
+      - https://cdn.example.com/star-topper/front.jpg
