@@ -8,7 +8,8 @@ import sys
 from typing import List, Optional
 
 from . import __version__
-from .validate import validate_file
+from .build import BuildError, build_csv, load_spec
+from .validate import validate_file, validate_text
 
 
 def _cmd_validate(args: argparse.Namespace) -> int:
@@ -50,6 +51,35 @@ def _cmd_validate(args: argparse.Namespace) -> int:
     return exit_code
 
 
+def _cmd_build(args: argparse.Namespace) -> int:
+    try:
+        text = build_csv(load_spec(args.input))
+    except OSError as exc:
+        print(f"shopcsv: cannot read {args.input}: {exc}", file=sys.stderr)
+        return 2
+    except BuildError as exc:
+        print(f"shopcsv: {exc}", file=sys.stderr)
+        return 1
+
+    # Safety net: never hand the user a CSV that our own validator rejects.
+    result = validate_text(text)
+    if result.errors:
+        for issue in result.errors:
+            print(issue.format("<built csv>"), file=sys.stderr)
+        return 1
+
+    if args.output and args.output != "-":
+        with open(args.output, "w", encoding="utf-8", newline="") as fh:
+            fh.write(text)
+        print(f"wrote {args.output}: {result.products} products, {result.variants} variants, "
+              f"{result.rows} rows", file=sys.stderr)
+    else:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")  # Windows consoles default to a legacy codepage
+        sys.stdout.write(text)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="shopcsv", description="Validate and generate Shopify product import CSVs.")
@@ -63,6 +93,11 @@ def build_parser() -> argparse.ArgumentParser:
     v.add_argument("--no-warnings", action="store_true", help="only print errors")
     v.add_argument("--format", choices=["text", "json"], default="text", help="output format")
     v.set_defaults(func=_cmd_validate)
+
+    b = sub.add_parser("build", help="expand a YAML/JSON product spec into a Shopify CSV")
+    b.add_argument("input", metavar="SPEC", help="products.yaml / products.yml / products.json")
+    b.add_argument("-o", "--output", metavar="CSV", help="output file (default: stdout)")
+    b.set_defaults(func=_cmd_build)
 
     return parser
 
