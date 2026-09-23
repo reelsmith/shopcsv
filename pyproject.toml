@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shopcsv"
+version = "0.1.0"
+description = "Validate and generate Shopify product import CSVs."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "reelsmith" }]
+keywords = ["shopify", "csv", "ecommerce", "product-import", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Topic :: Office/Business",
+]
+dependencies = []
+
+[project.optional-dependencies]
+yaml = ["pyyaml"]
+dev = ["pytest", "pyyaml"]
+
+[project.urls]
+Homepage = "https://github.com/reelsmith/shopcsv"
+
+[project.scripts]
+shopcsv = "shopcsv.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
