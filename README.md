@@ -18,6 +18,10 @@ that are quietly wrong. Hand-writing one row per variant for a product with
 
 It has no required dependencies. PyYAML is only needed to read YAML specs.
 
+## Why I built this
+
+I run a few small Shopify stores, mostly seasonal products with lots of variants, like lights that come in several colors and lengths. Every launch meant hand-building a CSV with a row for every combination. Then I'd upload it, get a vague error from the importer, and go hunting for the one row with `Deny` instead of `deny`. `shopcsv build` writes the variant rows for me, and `shopcsv validate` catches the mistakes before Shopify does.
+
 ## Install
 
 ```sh
@@ -194,6 +198,13 @@ do not affect the exit code unless you pass `--strict`.
 | `image-url` | error | `Image Src` and `Variant Image` must be `http(s)://` URLs with no spaces. |
 | `image-position` | error / warning | Image Position must be a positive whole number (error). A position repeated within a product, or a position with no image, is a warning. |
 | `image-alt` | warning | Alt text has no image, or is longer than 512 characters. |
+
+## Roadmap
+
+- [ ] Metafield columns (`product.metafields.custom.*`)
+- [ ] `shopcsv diff old.csv new.csv` to see which variants and prices changed between exports
+- [ ] Read a Shopify export and turn it back into a YAML spec
+- [ ] Per-market pricing columns
 
 ## Development
 
